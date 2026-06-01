@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover">
+<title>俄罗斯方块</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#1a1a2e;display:flex;justify-content:center;align-items:center;height:100vh;overflow:hidden;font-family:Arial,sans-serif;touch-action:manipulation}
+#game{display:flex;flex-direction:column;align-items:center;gap:12px}
+#info{display:flex;gap:20px;color:#fff;font-size:18px;font-weight:bold}
+#info span{color:#e94560}
+canvas{border:2px solid #e94560;background:#0f0f1a;display:block;max-width:90vw;max-height:60vh}
+#controls{display:flex;flex-direction:column;gap:10px;width:100%;max-width:300px}
+.row{display:flex;gap:10px;justify-content:center}
+.btn{flex:1;padding:14px 0;font-size:22px;font-weight:bold;border:none;border-radius:12px;background:#16213e;color:#e94560;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;min-height:50px;display:flex;align-items:center;justify-content:center}
+.btn:active{background:#e94560;color:#fff}
+.btn.wide{flex:2}
+@media(min-width:768px){#controls{display:none}}
+</style>
+</head>
+<body>
+
+<div id="game">
+  <div id="info">得分 <span id="score">0</span> 行数 <span id="lines">0</span></div>
+  <canvas id="c"></canvas>
+  <div id="controls">
+    <div class="row">
+      <button class="btn" id="rot">↻</button>
+      <button class="btn" id="up">↑</button>
+      <button class="btn" id="down">↓</button>
+    </div>
+    <div class="row">
+      <button class="btn wide" id="left">←</button>
+      <button class="btn wide" id="right">→</button>
+    </div>
+    <div class="row">
+      <button class="btn wide" id="drop">⚡ 硬降</button>
+      <button class="btn wide" id="pause">⏯</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const COLS=10,ROWS=20,BS=30;
+const canvas=document.getElementById('c');
+const ctx=canvas.getContext('2d');
+canvas.width=COLS*BS;canvas.height=ROWS*BS;
+
+const COLORS=['#0f0f1a','#00d2ff','#e94560','#ff6b6b','#f9ca24','#6c5ce7','#00b894','#fd79a8'];
+const PIECES=[
+  [[1,1,1,1]],
+  [[1,1],[1,1]],
+  [[0,1,0],[1,1,1]],
+  [[1,0,0],[1,1,1]],
+  [[0,0,1],[1,1,1]],
+  [[1,1,0],[0,1,1]],
+  [[0,1,1],[1,1,0]]
+];
+
+let board,piece,px,py,score,lines,gameOver,paused,timer;
+
+function newBoard(){return Array.from({length:ROWS},()=>Array(COLS).fill(0))}
+function spawn(){
+  const id=Math.floor(Math.random()*PIECES.length);
+  piece=PIECES[id].map(r=>[...r]);
+  px=Math.floor((COLS-piece[0].length)/2);
+  py=0;
+  if(collide()){gameOver=true;clearInterval(timer)}
+}
+function collide(){
+  for(let y=0;y<piece.length;y++)
+    for(let x=0;x<piece[y].length;x++)
+      if(piece[y][x]&&(py+y>=ROWS||px+x<0||px+x>=COLS||board[py+y]&&board[py+y][px+x]))return true;
+  return false;
+}
+function lock(){
+  for(let y=0;y<piece.length;y++)
+    for(let x=0;x<piece[y].length;x++)
+      if(piece[y][x])board[py+y][px+x]=piece[y][x]?COLORS.indexOf(COLORS[piece.length])+1:0;
+  let cleared=0;
+  for(let y=ROWS-1;y>=0;y--){
+    if(board[y].every(c=>c)){
+      board.splice(y,1);board.unshift(Array(COLS).fill(0));
+      cleared++;y++;
+    }
+  }
+  if(cleared){score+=[0,100,300,500,800][cleared];lines+=cleared}
+  spawn();
+}
+function move(dx,dy){
+  px+=dx;py+=dy;
+  if(collide()){px-=dx;py-=dy;if(dy)lock();return dy?false:true}
+  return true;
+}
+function rotate(){
+  const rot=piece[0].map((_,i)=>piece.map(r=>r[i]).reverse());
+  const old=piece;piece=rot;
+  if(collide())piece=old;
+}
+function drop(){while(move(0,1));}
+function draw(){
+  ctx.fillStyle='#0f0f1a';ctx.fillRect(0,0,canvas.width,canvas.height);
+  for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++)
+    if(board[y][x]){ctx.fillStyle=COLORS[board[y][x]];ctx.fillRect(x*BS+1,y*BS+1,BS-2,BS-2)}
+  if(!gameOver&&piece)for(let y=0;y<piece.length;y++)for(let x=0;x<piece[y].length;x++)
+    if(piece[y][x]){ctx.fillStyle=COLORS[piece.length];ctx.fillRect((px+x)*BS+1,(py+y)*BS+1,BS-2,BS-2)}
+  if(gameOver){ctx.fillStyle='rgba(0,0,0,0.7)';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.fillStyle='#e94560';ctx.font='24px Arial';ctx.textAlign='center';ctx.fillText('游戏结束',canvas.width/2,canvas.height/2)}
+  document.getElementById('score').textContent=score;
+  document.getElementById('lines').textContent=lines;
+}
+function tick(){if(!paused&&!gameOver){move(0,1);draw()}}
+function restart(){board=newBoard();score=0;lines=0;gameOver=false;paused=false;clearInterval(timer);timer=setInterval(tick,400);spawn();draw()}
+
+// 键盘
+document.addEventListener('keydown',e=>{
+  if(gameOver){if(e.key==='r')restart();return}
+  if(e.key==='p'){paused=!paused;return}
+  if(paused)return;
+  switch(e.key){
+    case 'ArrowLeft':move(-1,0);break;case 'ArrowRight':move(1,0);break;
+    case 'ArrowDown':move(0,1);break;case 'ArrowUp':rotate();break;
+    case ' ':drop();break;
+  }
+  draw();
+});
+
+// 触屏按钮
+document.getElementById('left').addEventListener('pointerdown',e=>{e.preventDefault();if(!paused&&!gameOver){move(-1,0);draw()}});
+document.getElementById('right').addEventListener('pointerdown',e=>{e.preventDefault();if(!paused&&!gameOver){move(1,0);draw()}});
+document.getElementById('down').addEventListener('pointerdown',e=>{e.preventDefault();if(!paused&&!gameOver){move(0,1);draw()}});
+document.getElementById('up').addEventListener('pointerdown',e=>{e.preventDefault();if(!paused&&!gameOver){rotate();draw()}});
+document.getElementById('rot').addEventListener('pointerdown',e=>{e.preventDefault();if(!paused&&!gameOver){rotate();draw()}});
+document.getElementById('drop').addEventListener('pointerdown',e=>{e.preventDefault();if(!paused&&!gameOver){drop();draw()}});
+document.getElementById('pause').addEventListener('pointerdown',e=>{e.preventDefault();if(!gameOver)paused=!paused});
+// 防止双击缩放
+document.querySelectorAll('.btn').forEach(b=>b.addEventListener('touchstart',e=>e.preventDefault()));
+// 游戏区域滑动
+let sy=0;
+canvas.addEventListener('touchstart',e=>{e.preventDefault();sy=e.touches[0].clientY});
+canvas.addEventListener('touchmove',e=>{e.preventDefault()});
+canvas.addEventListener('touchend',e=>{
+  e.preventDefault();
+  if(paused||gameOver)return;
+  const dy=e.changedTouches[0].clientY-sy;
+  if(dy>30)drop();
+});
+
+restart();
+</script>
+</body>
+</html>
