@@ -38,6 +38,9 @@ canvas{border:2px solid #e94560;background:#0f0f1a;display:block;max-width:90vw;
       <button class="btn wide" id="drop">⚡ 硬降</button>
       <button class="btn wide" id="pause">⏯</button>
     </div>
+    <div class="row">
+      <button class="btn wide" id="restart" style="background:#e94560;color:#fff">🔄 新开一局</button>
+    </div>
   </div>
 </div>
 
@@ -105,7 +108,7 @@ function draw(){
     if(board[y][x]){ctx.fillStyle=COLORS[board[y][x]];ctx.fillRect(x*BS+1,y*BS+1,BS-2,BS-2)}
   if(!gameOver&&piece)for(let y=0;y<piece.length;y++)for(let x=0;x<piece[y].length;x++)
     if(piece[y][x]){ctx.fillStyle=COLORS[piece.length];ctx.fillRect((px+x)*BS+1,(py+y)*BS+1,BS-2,BS-2)}
-  if(gameOver){ctx.fillStyle='rgba(0,0,0,0.7)';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.fillStyle='#e94560';ctx.font='24px Arial';ctx.textAlign='center';ctx.fillText('游戏结束',canvas.width/2,canvas.height/2)}
+  if(gameOver){ctx.fillStyle='rgba(0,0,0,0.7)';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.fillStyle='#e94560';ctx.font='bold 26px Arial';ctx.textAlign='center';ctx.fillText('游戏结束',canvas.width/2,canvas.height/2-16);ctx.font='16px Arial';ctx.fillStyle='#fff';ctx.fillText('点击画面重新开始',canvas.width/2,canvas.height/2+20)}
   document.getElementById('score').textContent=score;
   document.getElementById('lines').textContent=lines;
 }
@@ -133,18 +136,21 @@ document.getElementById('up').addEventListener('pointerdown',e=>{e.preventDefaul
 document.getElementById('rot').addEventListener('pointerdown',e=>{e.preventDefault();if(!paused&&!gameOver){rotate();draw()}});
 document.getElementById('drop').addEventListener('pointerdown',e=>{e.preventDefault();if(!paused&&!gameOver){drop();draw()}});
 document.getElementById('pause').addEventListener('pointerdown',e=>{e.preventDefault();if(!gameOver)paused=!paused});
+document.getElementById('restart').addEventListener('pointerdown',e=>{e.preventDefault();restart()});
 // 防止双击缩放
 document.querySelectorAll('.btn').forEach(b=>b.addEventListener('touchstart',e=>e.preventDefault()));
-// 游戏区域滑动
+// 游戏区域滑动 / 点击重开
 let sy=0;
 canvas.addEventListener('touchstart',e=>{e.preventDefault();sy=e.touches[0].clientY});
 canvas.addEventListener('touchmove',e=>{e.preventDefault()});
 canvas.addEventListener('touchend',e=>{
   e.preventDefault();
-  if(paused||gameOver)return;
+  if(gameOver){restart();return}
+  if(paused)return;
   const dy=e.changedTouches[0].clientY-sy;
   if(dy>30)drop();
 });
+canvas.addEventListener('click',e=>{if(gameOver)restart()});
 
 restart();
 </script>
