@@ -1,11 +1,8 @@
-// Service Worker — 俄罗斯方块离线支持
-const CACHE = 'tetris-v1';
-const URLS = ['./', './index.html', './manifest.json'];
+// Service Worker — 俄罗斯方块离线支持 (网络优先策略)
+const CACHE = 'tetris-v2';
 
 self.addEventListener('install', e => {
-  e.waitUntil(
-    caches.open(CACHE).then(c => c.addAll(URLS)).then(() => self.skipWaiting())
-  );
+  self.skipWaiting();
 });
 
 self.addEventListener('activate', e => {
@@ -18,6 +15,14 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   e.respondWith(
-    caches.match(e.request).then(cached => cached || fetch(e.request))
+    fetch(e.request).then(res => {
+      // 网络请求成功 → 更新缓存，返回最新内容
+      const clone = res.clone();
+      caches.open(CACHE).then(c => c.put(e.request, clone));
+      return res;
+    }).catch(() => {
+      // 离线 → 返回缓存
+      return caches.match(e.request);
+    })
   );
 });
