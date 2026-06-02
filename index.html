@@ -89,6 +89,8 @@ const PIECES=[
 
 let board,piece,px,py,score,lines,gameOver,paused,timer;
 let highScore=parseInt(localStorage.getItem('tetrisHigh')||'0');
+let nextPhotoScore=200;
+const PHOTO_URL=document.querySelector('.avatar-box img')?.src||'';
 
 function newBoard(){return Array.from({length:ROWS},()=>Array(COLS).fill(0))}
 function spawn(){
@@ -138,16 +140,22 @@ function draw(){
   if(gameOver){ctx.fillStyle='rgba(0,0,0,0.7)';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.fillStyle='#e94560';ctx.font='bold 26px Arial';ctx.textAlign='center';ctx.fillText('游戏结束',canvas.width/2,canvas.height/2-16);ctx.font='16px Arial';ctx.fillStyle='#fff';ctx.fillText('点击画面重新开始',canvas.width/2,canvas.height/2+20)}
   document.getElementById('score').textContent=score;
   document.getElementById('lines').textContent=lines;
-  // 1000分显示头像
-  if(score>=1000&&!document.body.classList.contains('themed')){
-    document.body.classList.add('themed');
-    document.getElementById('avatar').classList.add('show');
+  // 每200分随机位置弹出照片
+  if(score>=nextPhotoScore){
+    const p=document.createElement('img');
+    p.src=PHOTO_URL;
+    p.style.cssText='position:fixed;width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid #e94560;box-shadow:0 0 25px rgba(233,69,96,0.7);z-index:5;pointer-events:none;transition:opacity 1s';
+    p.style.left=(5+Math.random()*75)+'%';
+    p.style.top=(10+Math.random()*70)+'%';
+    document.body.appendChild(p);
+    setTimeout(()=>{p.style.opacity='0';setTimeout(()=>p.remove(),1000)},2500);
+    nextPhotoScore+=200;
   }
   if(score>highScore){highScore=score;localStorage.setItem('tetrisHigh',highScore)}
   document.getElementById('hscore').textContent=highScore;
 }
 function tick(){if(!paused&&!gameOver){move(0,1);draw()}}
-function restart(){board=newBoard();score=0;lines=0;gameOver=false;paused=false;clearInterval(timer);timer=setInterval(tick,400);spawn();highScore=parseInt(localStorage.getItem('tetrisHigh')||'0');document.body.classList.remove('themed');document.getElementById('avatar').classList.remove('show');draw()}
+function restart(){board=newBoard();score=0;lines=0;gameOver=false;paused=false;clearInterval(timer);timer=setInterval(tick,400);spawn();highScore=parseInt(localStorage.getItem('tetrisHigh')||'0');document.body.classList.remove('themed');document.getElementById('avatar').classList.remove('show');nextPhotoScore=200;document.querySelectorAll('img[style*=\"position:fixed\"]').forEach(e=>e.remove());draw()}
 
 // 键盘
 document.addEventListener('keydown',e=>{
