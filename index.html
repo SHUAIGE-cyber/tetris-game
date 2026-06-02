@@ -31,9 +31,9 @@ canvas{border:2px solid #e94560;background:#0f0f1a;display:block;max-width:90vw;
 .btn.accent{background:#e94560;color:#fff}
 .btn.accent:active{background:#ff6b6b}
 #game.themed canvas{border-color:rgba(255,255,255,0.6)}
-.dpad-row{justify-content:space-between!important;align-items:center}
-.dpad{display:flex;gap:8px}
-.rot-wrap{margin-left:12px}
+.top-row{justify-content:space-between!important;align-items:center}
+.spacer{width:80px;min-width:48px}
+.rot-wrap{margin-left:8px}
 @media(min-width:768px){#controls{display:none}}
 </style>
 </head>
@@ -43,18 +43,17 @@ canvas{border:2px solid #e94560;background:#0f0f1a;display:block;max-width:90vw;
   <div id="info">得分 <span id="score">0</span> 行数 <span id="lines">0</span> | 最高 <span id="hscore">0</span></div>
   <canvas id="c"></canvas>
   <div id="controls">
-    <div class="row">
+    <div class="row top-row">
+      <span class="spacer"></span>
       <button class="btn arr" id="up" style="font-size:30px">↑</button>
-    </div>
-    <div class="row dpad-row">
-      <span class="dpad">
-        <button class="btn arr" id="left">←</button>
-        <button class="btn arr" id="down">↓</button>
-        <button class="btn arr" id="right">→</button>
-      </span>
       <span class="rot-wrap">
         <button class="btn side" id="rot">↻ 旋转</button>
       </span>
+    </div>
+    <div class="row">
+      <button class="btn arr" id="left">←</button>
+      <button class="btn arr" id="down">↓</button>
+      <button class="btn arr" id="right">→</button>
     </div>
     <div class="row">
       <button class="btn side" id="pause">⏯ 暂停</button>
