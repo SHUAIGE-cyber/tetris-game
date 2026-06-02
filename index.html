@@ -29,6 +29,9 @@ canvas{border:2px solid #e94560;background:#0f0f1a;display:block;max-width:90vw;
 .btn.side{flex:1;max-width:80px;font-size:16px}
 .btn.accent{background:#e94560;color:#fff}
 .btn.accent:active{background:#ff6b6b}#game.themed canvas{border-color:rgba(255,255,255,0.6)}
+.dpad-row{justify-content:space-between!important;align-items:center}
+.dpad{display:flex;gap:8px}
+.rot-wrap{margin-left:12px}
 @media(min-width:768px){#controls{display:none}}
 </style>
 </head>
@@ -39,13 +42,17 @@ canvas{border:2px solid #e94560;background:#0f0f1a;display:block;max-width:90vw;
   <canvas id="c"></canvas>
   <div id="controls">
     <div class="row">
-      <button class="btn side" id="rot" style="max-width:90px">↻ 旋转</button>
       <button class="btn arr" id="up" style="font-size:30px">↑</button>
     </div>
-    <div class="row">
-      <button class="btn arr" id="left">←</button>
-      <button class="btn arr" id="down">↓</button>
-      <button class="btn arr" id="right">→</button>
+    <div class="row dpad-row">
+      <span class="dpad">
+        <button class="btn arr" id="left">←</button>
+        <button class="btn arr" id="down">↓</button>
+        <button class="btn arr" id="right">→</button>
+      </span>
+      <span class="rot-wrap">
+        <button class="btn side" id="rot">↻ 旋转</button>
+      </span>
     </div>
     <div class="row">
       <button class="btn side" id="pause">⏯ 暂停</button>
