@@ -141,8 +141,8 @@ function draw(){
   document.getElementById('score').textContent=score;
   document.getElementById('lines').textContent=lines;
   // 每200分随机位置弹出照片
-  if(score>=nextPhotoScore){
-    const p=document.createElement('img');
+  while(score>=nextPhotoScore){
+    let p=document.createElement('img');
     p.src=PHOTO_URL;
     p.style.cssText='position:fixed;width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid #e94560;box-shadow:0 0 25px rgba(233,69,96,0.7);z-index:5;pointer-events:none';
     p.style.left=(5+Math.random()*75)+'%';
