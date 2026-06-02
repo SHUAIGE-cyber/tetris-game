@@ -144,11 +144,11 @@ function draw(){
   if(score>=nextPhotoScore){
     const p=document.createElement('img');
     p.src=PHOTO_URL;
-    p.style.cssText='position:fixed;width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid #e94560;box-shadow:0 0 25px rgba(233,69,96,0.7);z-index:5;pointer-events:none;transition:opacity 1s';
+    p.style.cssText='position:fixed;width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid #e94560;box-shadow:0 0 25px rgba(233,69,96,0.7);z-index:5;pointer-events:none';
     p.style.left=(5+Math.random()*75)+'%';
     p.style.top=(10+Math.random()*70)+'%';
     document.body.appendChild(p);
-    setTimeout(()=>{p.style.opacity='0';setTimeout(()=>p.remove(),1000)},2500);
+    // 永远保留
     nextPhotoScore+=200;
   }
   if(score>highScore){highScore=score;localStorage.setItem('tetrisHigh',highScore)}
