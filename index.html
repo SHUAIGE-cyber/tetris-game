@@ -6,6 +6,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="俄罗斯方块">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <meta name="theme-color" content="#1a1a2e">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAACeUlEQVR4nO3WsY0TYRhFUdexMfF2QRcE5LsN0AdFUAI1EG4TiBIIkJGICLjJeCQ/rCPd+Gn0zwm+y9PTs/TPLnf/As0GhzI4lMGhDA5lcCiDQxkcyuBQBocyOJTBoQwOZXAog0MZHMrgUAaHMjiUwaEMDmVwKIND2RCOy9v1QI+3sBMccws7wTG3sBMccws7wTG3sBMccws7wTG3sBMccws7wTG3sBMccws7wTG3sBMccws7wTG3sBMccws7wTG3sBMccws7wTG3sBMccws7DeHQWnAog0MZHMpOw/Hz27sDnbvw+uH7gdYWfn36ciA44IADDjjggAMOOOCAAw444IADDjjggAOO+/9aOOCAAw444JhagAMOOOCAAw444IBD+hMcyuBQBoeyoYP08vXzgc5dWDgnb1/48f7jgeCAAw444IADDjjggAMOOOCAAw444IADDjjggAMOOOCAAw444IADDjjggAMOOPR4waEMDmVwKDsNx8I5eXu3H4O3d/s5OXeQwgEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxz/CQ49XnAog0MZHMqGcFxfXg507sLl7XqgvxfOOgYXggMOOOCAAw444IADDjjguPvjwwEHHHDAAQcccMABx15wwAEHHHDAAQcccMABBxx3f/x1HFoLDmVwKINDGRzK4FAGhzI4lMGhDA5lcCiDQxkcyuBQBocyOJTBoQwOZXAog0MZHMrgUAaHMjiUwaEMDmVwKINDGRzK4FAGhzI4lMGhDA5lcCiDQxkcyuBQBocyOJTBoQwOZXAog0MZHMrgUAaHMjiUwaEMDmW/Aek95/V7LZlqAAAAAElFTkSuQmCC">
@@ -165,7 +168,16 @@ restart();
 </script>
 
 <script>
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js')}
+// 强制清除旧 Service Worker 和缓存，然后注册新版
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.getRegistrations().then(regs=>{
+    return Promise.all(regs.map(r=>r.unregister()));
+  }).then(()=>{
+    return caches.keys().then(keys=>Promise.all(keys.map(k=>caches.delete(k))));
+  }).then(()=>{
+    navigator.serviceWorker.register('sw.js?t=3');
+  });
+}
 </script>
 
 </body>
