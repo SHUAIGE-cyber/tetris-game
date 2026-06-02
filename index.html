@@ -18,35 +18,35 @@ body{background:#1a1a2e;display:flex;justify-content:center;align-items:center;h
 #info{display:flex;gap:20px;color:#fff;font-size:18px;font-weight:bold}
 #info span{color:#e94560}
 canvas{border:2px solid #e94560;background:#0f0f1a;display:block;max-width:90vw;max-height:60vh}
-#controls{display:flex;flex-direction:column;gap:10px;width:100%;max-width:300px}
-.row{display:flex;gap:10px;justify-content:center}
-.btn{flex:1;padding:14px 0;font-size:22px;font-weight:bold;border:none;border-radius:12px;background:#16213e;color:#e94560;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;min-height:50px;display:flex;align-items:center;justify-content:center}
+#controls{display:flex;flex-direction:column;gap:8px;width:100%;max-width:340px}
+.row{display:flex;gap:8px;justify-content:center}
+.btn{font-size:20px;font-weight:bold;border:none;border-radius:12px;background:#16213e;color:#e94560;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;min-height:52px;display:flex;align-items:center;justify-content:center;padding:12px 6px;min-width:48px}
 .btn:active{background:#e94560;color:#fff}
-.btn.wide{flex:2}
+.btn.arr{font-size:26px;min-height:52px;min-width:52px;flex:1;max-width:60px}
+.btn.side{flex:1;max-width:80px;font-size:16px}
+.btn.accent{background:#e94560;color:#fff}
+.btn.accent:active{background:#ff6b6b}
 @media(min-width:768px){#controls{display:none}}
 </style>
 </head>
 <body>
 
 <div id="game">
-  <div id="info">得分 <span id="score">0</span> 行数 <span id="lines">0</span></div>
+  <div id="info">得分 <span id="score">0</span> 行数 <span id="lines">0</span> | 最高 <span id="hscore">0</span></div>
   <canvas id="c"></canvas>
   <div id="controls">
     <div class="row">
-      <button class="btn" id="rot">↻</button>
-      <button class="btn" id="up">↑</button>
-      <button class="btn" id="down">↓</button>
+      <button class="btn arr" id="up" style="font-size:30px">↑</button>
     </div>
     <div class="row">
-      <button class="btn wide" id="left">←</button>
-      <button class="btn wide" id="right">→</button>
+      <button class="btn side" id="pause">⏯ 暂停</button>
+      <button class="btn arr" id="left">←</button>
+      <button class="btn arr" id="down">↓</button>
+      <button class="btn arr" id="right">→</button>
+      <button class="btn side" id="drop">⚡ 硬降</button>
     </div>
     <div class="row">
-      <button class="btn wide" id="drop">⚡ 硬降</button>
-      <button class="btn wide" id="pause">⏯</button>
-    </div>
-    <div class="row">
-      <button class="btn wide" id="restart" style="background:#e94560;color:#fff">🔄 新开一局</button>
+      <button class="btn accent" id="restart" style="flex:1;max-width:200px">🔄 新开一局</button>
     </div>
   </div>
 </div>
@@ -69,6 +69,7 @@ const PIECES=[
 ];
 
 let board,piece,px,py,score,lines,gameOver,paused,timer;
+let highScore=parseInt(localStorage.getItem('tetrisHigh')||'0');
 
 function newBoard(){return Array.from({length:ROWS},()=>Array(COLS).fill(0))}
 function spawn(){
@@ -118,9 +119,11 @@ function draw(){
   if(gameOver){ctx.fillStyle='rgba(0,0,0,0.7)';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.fillStyle='#e94560';ctx.font='bold 26px Arial';ctx.textAlign='center';ctx.fillText('游戏结束',canvas.width/2,canvas.height/2-16);ctx.font='16px Arial';ctx.fillStyle='#fff';ctx.fillText('点击画面重新开始',canvas.width/2,canvas.height/2+20)}
   document.getElementById('score').textContent=score;
   document.getElementById('lines').textContent=lines;
+  if(score>highScore){highScore=score;localStorage.setItem('tetrisHigh',highScore)}
+  document.getElementById('hscore').textContent=highScore;
 }
 function tick(){if(!paused&&!gameOver){move(0,1);draw()}}
-function restart(){board=newBoard();score=0;lines=0;gameOver=false;paused=false;clearInterval(timer);timer=setInterval(tick,400);spawn();draw()}
+function restart(){board=newBoard();score=0;lines=0;gameOver=false;paused=false;clearInterval(timer);timer=setInterval(tick,400);spawn();highScore=parseInt(localStorage.getItem('tetrisHigh')||'0');draw()}
 
 // 键盘
 document.addEventListener('keydown',e=>{
@@ -140,9 +143,8 @@ document.getElementById('left').addEventListener('pointerdown',e=>{e.preventDefa
 document.getElementById('right').addEventListener('pointerdown',e=>{e.preventDefault();if(!paused&&!gameOver){move(1,0);draw()}});
 document.getElementById('down').addEventListener('pointerdown',e=>{e.preventDefault();if(!paused&&!gameOver){move(0,1);draw()}});
 document.getElementById('up').addEventListener('pointerdown',e=>{e.preventDefault();if(!paused&&!gameOver){rotate();draw()}});
-document.getElementById('rot').addEventListener('pointerdown',e=>{e.preventDefault();if(!paused&&!gameOver){rotate();draw()}});
 document.getElementById('drop').addEventListener('pointerdown',e=>{e.preventDefault();if(!paused&&!gameOver){drop();draw()}});
-document.getElementById('pause').addEventListener('pointerdown',e=>{e.preventDefault();if(!gameOver)paused=!paused});
+document.getElementById('pause').addEventListener('pointerdown',e=>{e.preventDefault();if(!gameOver){paused=!paused;draw()}});
 document.getElementById('restart').addEventListener('pointerdown',e=>{e.preventDefault();restart()});
 // 防止双击缩放
 document.querySelectorAll('.btn').forEach(b=>b.addEventListener('touchstart',e=>e.preventDefault()));
