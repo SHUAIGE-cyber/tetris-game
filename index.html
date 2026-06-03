@@ -148,22 +148,22 @@ function draw(){
   document.getElementById('tscore').textContent=(totalScore||0)+score;
   while(score>=nextPhoto){
     var r=pop(RED_URL,50,'#e94560',5,reds.length,'left');reds.push(r);nextPhoto+=100;
-    if(reds.length>=3){
+    if(reds.length>=2){
       reds.forEach(function(p){p.remove()});reds=[];
       var g=pop(GOLD_URL,65,'#f9ca24',6,goldCount,'right');golds.push(g);goldCount++;
-      if(golds.length>=3){
+      if(golds.length>=2){
         golds.forEach(function(p){p.remove()});golds=[];
         var b=pop(BLUE_URL,75,'#00d2ff',7,blueCount,'right');blues.push(b);blueCount++;
-        if(blues.length>=3){
+        if(blues.length>=2){
           blues.forEach(function(p){p.remove()});blues=[];
           var gr=pop(GREEN_URL,85,'#00ff88',8,greenCount,'right');greens.push(gr);greenCount++;
-          if(greens.length>=3){
+          if(greens.length>=2){
             greens.forEach(function(p){p.remove()});greens=[];
             var i1=pop(IMG1_URL,90,'#ff8800',9,img1Count,'right');img1s.push(i1);img1Count++;
-            if(img1s.length>=3){
+            if(img1s.length>=2){
               img1s.forEach(function(p){p.remove()});img1s=[];
               var i2=pop(IMG2_URL,95,'#ff00ff',10,img2Count,'right');img2s.push(i2);img2Count++;
-              if(img2s.length>=3){
+              if(img2s.length>=2){
                 img2s.forEach(function(p){p.remove()});img2s=[];
                 quizLocked=true;gameOver=true;paused=true;clearInterval(timer);
                 document.getElementById('quiz').style.display='flex';
