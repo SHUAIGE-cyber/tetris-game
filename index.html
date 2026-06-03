@@ -90,13 +90,14 @@ let quizDone=false,quizLocked=false;
   if(saved){try{var s=JSON.parse(saved);nextPhoto=s.nextPhoto||100;goldCount=s.goldCount||0;blueCount=s.blueCount||0;greenCount=s.greenCount||0;img1Count=s.img1Count||0;img2Count=s.img2Count||0;redLen=s.redLen||0;rebuildPhotos()}catch(e){}}
 })();
 
-function pop(src,size,borderColor,z,count){
+function pop(src,size,borderColor,z,count,side){
   var d=document.createElement('img');
   d.src=src;
   var s=size+'px';
   d.style.cssText='position:fixed;width:'+s+';height:'+s+';border-radius:8px;object-fit:cover;border:3px solid '+borderColor+';box-shadow:0 0 18px '+borderColor+';z-index:'+z+';pointer-events:none';
   var col=count%5,row=Math.floor(count/5),gap=size+8;
-  d.style.right=(8+col*gap)+'px';d.style.top=(8+row*gap)+'px';
+  if(side==='left'){d.style.left=(8+col*gap)+'px'}else{d.style.right=(8+col*gap)+'px'}
+  d.style.top=(8+row*gap)+'px';
   document.body.appendChild(d);return d;
 }
 
@@ -146,22 +147,22 @@ function draw(){
   document.getElementById('lines').textContent=lines;
   document.getElementById('tscore').textContent=(totalScore||0)+score;
   while(score>=nextPhoto){
-    var r=pop(RED_URL,50,'#e94560',5,reds.length);reds.push(r);nextPhoto+=100;
+    var r=pop(RED_URL,50,'#e94560',5,reds.length,'left');reds.push(r);nextPhoto+=100;
     if(reds.length>=3){
       reds.forEach(function(p){p.remove()});reds=[];
-      var g=pop(GOLD_URL,65,'#f9ca24',6,goldCount);golds.push(g);goldCount++;
+      var g=pop(GOLD_URL,65,'#f9ca24',6,goldCount,'right');golds.push(g);goldCount++;
       if(golds.length>=3){
         golds.forEach(function(p){p.remove()});golds=[];
-        var b=pop(BLUE_URL,75,'#00d2ff',7,blueCount);blues.push(b);blueCount++;
+        var b=pop(BLUE_URL,75,'#00d2ff',7,blueCount,'right');blues.push(b);blueCount++;
         if(blues.length>=3){
           blues.forEach(function(p){p.remove()});blues=[];
-          var gr=pop(GREEN_URL,85,'#00ff88',8,greenCount);greens.push(gr);greenCount++;
+          var gr=pop(GREEN_URL,85,'#00ff88',8,greenCount,'right');greens.push(gr);greenCount++;
           if(greens.length>=3){
             greens.forEach(function(p){p.remove()});greens=[];
-            var i1=pop(IMG1_URL,90,'#ff8800',9,img1Count);img1s.push(i1);img1Count++;
+            var i1=pop(IMG1_URL,90,'#ff8800',9,img1Count,'right');img1s.push(i1);img1Count++;
             if(img1s.length>=3){
               img1s.forEach(function(p){p.remove()});img1s=[];
-              var i2=pop(IMG2_URL,95,'#ff00ff',10,img2Count);img2s.push(i2);img2Count++;
+              var i2=pop(IMG2_URL,95,'#ff00ff',10,img2Count,'right');img2s.push(i2);img2Count++;
               if(img2s.length>=3){
                 img2s.forEach(function(p){p.remove()});img2s=[];
                 quizLocked=true;gameOver=true;paused=true;clearInterval(timer);
@@ -180,13 +181,12 @@ function saveState(){
   localStorage.setItem('tetrisState',JSON.stringify(state));
 }
 function rebuildPhotos(){
-  // Rebuild reds
-  for(var i=0;i<(redLen||0);i++){var r=pop(RED_URL,50,'#e94560',5,i);reds.push(r)}
-  for(var i=0;i<goldCount;i++){var g=pop(GOLD_URL,65,'#f9ca24',6,i);golds.push(g)}
-  for(var i=0;i<blueCount;i++){var b=pop(BLUE_URL,75,'#00d2ff',7,i);blues.push(b)}
-  for(var i=0;i<greenCount;i++){var gr=pop(GREEN_URL,85,'#00ff88',8,i);greens.push(gr)}
-  for(var i=0;i<img1Count;i++){var i1=pop(IMG1_URL,90,'#ff8800',9,i);img1s.push(i1)}
-  for(var i=0;i<img2Count;i++){var i2=pop(IMG2_URL,95,'#ff00ff',10,i);img2s.push(i2)}
+  for(var i=0;i<(redLen||0);i++){var r=pop(RED_URL,50,'#e94560',5,i,'left');reds.push(r)}
+  for(var i=0;i<goldCount;i++){var g=pop(GOLD_URL,65,'#f9ca24',6,i,'right');golds.push(g)}
+  for(var i=0;i<blueCount;i++){var b=pop(BLUE_URL,75,'#00d2ff',7,i,'right');blues.push(b)}
+  for(var i=0;i<greenCount;i++){var gr=pop(GREEN_URL,85,'#00ff88',8,i,'right');greens.push(gr)}
+  for(var i=0;i<img1Count;i++){var i1=pop(IMG1_URL,90,'#ff8800',9,i,'right');img1s.push(i1)}
+  for(var i=0;i<img2Count;i++){var i2=pop(IMG2_URL,95,'#ff00ff',10,i,'right');img2s.push(i2)}
 }
 function restart(){
   if(quizLocked)return;
