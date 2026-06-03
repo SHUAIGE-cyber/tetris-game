@@ -71,8 +71,8 @@ const PIECES=[
 ];
 
 let board,piece,px,py,score,lines,gameOver,paused,timer;
-let totalScore=parseInt(localStorage.getItem('tetrisTotal')||'0');
-if(isNaN(totalScore))totalScore=0;
+let totalScore=parseInt(localStorage.getItem('tetrisTotal'));
+if(isNaN(totalScore)||!totalScore){totalScore=0;localStorage.removeItem('tetrisTotal');}
 document.getElementById('tscore').textContent=totalScore;
 
 let nextPhoto=200,reds=[],golds=[],blues=[],greens=[],img1s=[],img2s=[];
@@ -131,7 +131,7 @@ function draw(){
   if(gameOver&&!quizLocked){ctx.fillStyle='rgba(0,0,0,0.7)';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.fillStyle='#e94560';ctx.font='bold 26px Arial';ctx.textAlign='center';ctx.fillText('游戏结束',canvas.width/2,canvas.height/2-16);ctx.font='16px Arial';ctx.fillStyle='#fff';ctx.fillText('点击画面重新开始',canvas.width/2,canvas.height/2+20)}
   document.getElementById('score').textContent=score;
   document.getElementById('lines').textContent=lines;
-  document.getElementById('tscore').textContent=totalScore+score;
+  document.getElementById('tscore').textContent=(totalScore||0)+score;
   while(score>=nextPhoto){
     var r=pop('#e94560',50,5,reds.length);reds.push(r);nextPhoto+=200;
     if(reds.length>=3){
@@ -164,7 +164,7 @@ function draw(){
 function tick(){if(!paused&&!gameOver){move(0,1);draw()}}
 function restart(){
   if(quizLocked)return;
-  totalScore+=score;localStorage.setItem('tetrisTotal',totalScore);document.getElementById('tscore').textContent=totalScore;
+  totalScore=(totalScore||0)+score;localStorage.setItem('tetrisTotal',totalScore);document.getElementById('tscore').textContent=totalScore;
   board=newBoard();score=0;lines=0;gameOver=false;paused=false;
   clearInterval(timer);timer=setInterval(tick,400);spawn();
   nextPhoto=200;
