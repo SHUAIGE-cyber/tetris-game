@@ -72,6 +72,7 @@ const PIECES=[
 
 let board,piece,px,py,score,lines,gameOver,paused,timer;
 let totalScore=parseInt(localStorage.getItem('tetrisTotal')||'0');
+if(isNaN(totalScore))totalScore=0;
 document.getElementById('tscore').textContent=totalScore;
 
 let nextPhoto=200,reds=[],golds=[],blues=[],greens=[],img1s=[],img2s=[];
