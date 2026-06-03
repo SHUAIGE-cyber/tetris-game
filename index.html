@@ -163,7 +163,7 @@ function draw(){
 function tick(){if(!paused&&!gameOver){move(0,1);draw()}}
 function restart(){
   if(quizLocked)return;
-  if(quizDone){totalScore+=score;localStorage.setItem('tetrisTotal',totalScore);document.getElementById('tscore').textContent=totalScore;}
+  totalScore+=score;localStorage.setItem('tetrisTotal',totalScore);document.getElementById('tscore').textContent=totalScore;
   board=newBoard();score=0;lines=0;gameOver=false;paused=false;
   clearInterval(timer);timer=setInterval(tick,400);spawn();
   nextPhoto=200;
