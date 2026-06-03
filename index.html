@@ -49,9 +49,7 @@ canvas{border:2px solid #e94560;background:#0f0f1a;display:block;max-width:90vw;
   <canvas id="c"></canvas>
   <div id="controls">
     <div class="row top-row">
-      <span class="rot-wrap">
-        <button class="btn side" id="rot">↻ 旋转</button>
-      </span>
+      <button class="btn side" id="pause">⏯</button>
       <button class="btn arr" id="up" style="font-size:30px">↑</button>
       <span class="spacer"></span>
     </div>
@@ -61,7 +59,9 @@ canvas{border:2px solid #e94560;background:#0f0f1a;display:block;max-width:90vw;
       <button class="btn arr" id="right">→</button>
     </div>
     <div class="row">
-      <button class="btn side" id="pause">⏯ 暂停</button>
+      <button class="btn side" <span class="rot-wrap">
+        <button class="btn side" id="rot">↻ 旋转</button>
+      </span>
       <button class="btn side" id="drop">⚡ 硬降</button>
     </div>
     <div class="row">
