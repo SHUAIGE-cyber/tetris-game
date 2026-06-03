@@ -147,7 +147,7 @@ function draw(){
   document.getElementById('lines').textContent=lines;
   document.getElementById('tscore').textContent=(totalScore||0)+score;
   while(score>=nextPhoto){
-    var r=pop(RED_URL,50,'#e94560',5,reds.length,'left');reds.push(r);nextPhoto+=100;
+    var r=pop(RED_URL,50,'#e94560',5,reds.length,'left');reds.push(r);redLen=reds.length;nextPhoto+=100;
     if(reds.length>=2){
       reds.forEach(function(p){p.remove()});reds=[];
       var g=pop(GOLD_URL,65,'#f9ca24',6,goldCount,'right');golds.push(g);goldCount++;
@@ -174,6 +174,7 @@ function draw(){
       }
     }
   }
+  saveState();
 }
 function tick(){if(!paused&&!gameOver){move(0,1);draw()}}
 function saveState(){
