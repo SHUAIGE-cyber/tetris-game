@@ -145,57 +145,46 @@ function draw(){
   if(gameOver){ctx.fillStyle='rgba(0,0,0,0.7)';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.fillStyle='#e94560';ctx.font='bold 26px Arial';ctx.textAlign='center';ctx.fillText('游戏结束',canvas.width/2,canvas.height/2-16);ctx.font='16px Arial';ctx.fillStyle='#fff';ctx.fillText('点击画面重新开始',canvas.width/2,canvas.height/2+20)}
   document.getElementById('score').textContent=score;
   document.getElementById('lines').textContent=lines;
-  // 红色(200分右上角) → 3张金色(右上角) → 3张蓝色(左右) → 3张绿色(不消失)
+  // 四层合成，全部右上角排列
   while(score>=nextPhotoScore){
-    // 红色小图，右上角排列
+    // 红色小图
     let p=document.createElement('img');
     p.src=PHOTO_URL;
-    p.style.cssText='position:fixed;width:55px;height:55px;border-radius:50%;object-fit:cover;border:2px solid #e94560;box-shadow:0 0 12px rgba(233,69,96,0.6);z-index:5;pointer-events:none';
-    let rCol=popupPhotos.length%4,rRow=Math.floor(popupPhotos.length/4);
-    p.style.right=(10+rCol*65)+'px';
-    p.style.top=(10+rRow*65)+'px';
+    p.style.cssText='position:fixed;width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid #e94560;box-shadow:0 0 10px rgba(233,69,96,0.5);z-index:5;pointer-events:none';
+    let c=popupPhotos.length%5,r=Math.floor(popupPhotos.length/5);
+    p.style.right=(8+c*58)+'px';p.style.top=(8+r*58)+'px';
     document.body.appendChild(p);
     popupPhotos.push(p);
     nextPhotoScore+=200;
     // 每3张红色 → 1张金色
     if(popupPhotos.length>=3){
-      popupPhotos.forEach(img=>img.remove());
-      popupPhotos=[];
+      popupPhotos.forEach(img=>img.remove());popupPhotos=[];
       let m=document.createElement('img');
       m.src=MERGE_URL;
-      m.style.cssText='position:fixed;width:75px;height:75px;border-radius:12px;object-fit:cover;border:3px solid #f9ca24;box-shadow:0 0 18px rgba(249,202,36,0.7);z-index:6;pointer-events:none';
-      let gCol=mergeCount%4,gRow=Math.floor(mergeCount/4);
-      m.style.right=(10+gCol*85)+'px';
-      m.style.top=(10+gRow*85)+'px';
+      m.style.cssText='position:fixed;width:65px;height:65px;border-radius:10px;object-fit:cover;border:3px solid #f9ca24;box-shadow:0 0 15px rgba(249,202,36,0.6);z-index:6;pointer-events:none';
+      let gc=mergeCount%5,gr=Math.floor(mergeCount/5);
+      m.style.right=(8+gc*73)+'px';m.style.top=(8+gr*73)+'px';
       document.body.appendChild(m);
-      goldenPhotos.push(m);
-      mergeCount++;
-      // 每3张金色 → 1张蓝色（左右排列）
+      goldenPhotos.push(m);mergeCount++;
+      // 每3张金色 → 1张蓝色
       if(goldenPhotos.length>=3){
-        goldenPhotos.forEach(img=>img.remove());
-        goldenPhotos=[];
+        goldenPhotos.forEach(img=>img.remove());goldenPhotos=[];
         let f=document.createElement('img');
         f.src=FINAL_URL;
-        f.style.cssText='position:fixed;width:80px;height:80px;border-radius:8px;object-fit:cover;border:3px solid #00d2ff;box-shadow:0 0 20px rgba(0,210,255,0.7);z-index:7;pointer-events:none';
-        let side=finalCount%2;
-        let bPos=Math.floor(finalCount/2);
-        if(side===0){f.style.left='5px'}else{f.style.right='5px'}
-        f.style.top=(5+bPos*90)+'px';
+        f.style.cssText='position:fixed;width:75px;height:75px;border-radius:8px;object-fit:cover;border:3px solid #00d2ff;box-shadow:0 0 18px rgba(0,210,255,0.6);z-index:7;pointer-events:none';
+        let bc=finalCount%5,br=Math.floor(finalCount/5);
+        f.style.right=(8+bc*83)+'px';f.style.top=(8+br*83)+'px';
         document.body.appendChild(f);
-        // 跟踪蓝色图
         if(!window._blueImgs)window._blueImgs=[];
-        window._blueImgs.push(f);
-        finalCount++;
-        // 每3张蓝色 → 1张绿色（不消失）
+        window._blueImgs.push(f);finalCount++;
+        // 每3张蓝色 → 1张绿色（永不消失）
         if(window._blueImgs.length>=3){
-          window._blueImgs.forEach(img=>img.remove());
-          window._blueImgs=[];
+          window._blueImgs.forEach(img=>img.remove());window._blueImgs=[];
           let g=document.createElement('img');
           g.src=GREEN_URL;
-          g.style.cssText='position:fixed;width:90px;height:90px;border-radius:8px;object-fit:cover;border:3px solid #00ff88;box-shadow:0 0 25px rgba(0,255,136,0.7);z-index:8;pointer-events:none';
-          let grCol=window._greenCount||0;
-          g.style.right=(10+(grCol%4)*100)+'px';
-          g.style.bottom=(10+Math.floor(grCol/4)*100)+'px';
+          g.style.cssText='position:fixed;width:85px;height:85px;border-radius:8px;object-fit:cover;border:3px solid #00ff88;box-shadow:0 0 22px rgba(0,255,136,0.7);z-index:8;pointer-events:none';
+          let gc2=window._greenCount||0;
+          g.style.right=(8+(gc2%5)*93)+'px';g.style.top=(8+Math.floor(gc2/5)*93)+'px';
           document.body.appendChild(g);
           window._greenCount=(window._greenCount||0)+1;
         }
